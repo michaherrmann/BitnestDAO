@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive Analyse: BitNest DAO Entschlüsselt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, single-page scrolling application designed to guide beginners. The structure flows from broad concepts (DeFi basics) to specific details (BitNest ecosystem, commission model) and concludes with a balanced view of risks and opportunities. This narrative approach is more user-friendly for a lay audience than a data-heavy dashboard. Key interactions include clickable info cards, an interactive diagram for the smart contracts, and a dynamic chart for the commission model, all designed to make complex information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - DeFi/DAO/Smart Contract Info -> Goal: Inform -> Viz: Interactive HTML cards -> Interaction: Click-to-reveal -> Justification: Breaks down dense text into manageable, user-triggered chunks. -> Method: Vanilla JS.
+        - Smart Contract Roles -> Goal: Organize/Relationships -> Viz: HTML/CSS flexbox diagram -> Interaction: Click on contract to highlight and display info -> Justification: Visually illustrates the system architecture for intuitive understanding. -> Method: Vanilla JS.
+        - Commission Percentages -> Goal: Compare/Inform -> Viz: Chart.js Bar Chart with a slider -> Interaction: User adjusts slider to simulate investment, chart updates to show concrete earnings -> Justification: Makes abstract percentages tangible and demonstrates the model's potential impact. -> Method: Chart.js & Vanilla JS.
+        - Risks vs. Opportunities -> Goal: Compare -> Viz: Two-column HTML layout with Unicode icons -> Interaction: Static display -> Justification: Provides a quick, scannable, and balanced summary. -> Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #3D352E;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A47C57;
+            border-bottom-color: #A47C57;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .contract-box {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .contract-box.active {
+            background-color: #D4A276;
+            color: #FFFFFF;
+            transform: scale(1.05);
+        }
+        .contract-box:not(.active):hover {
+            background-color: #EFEBE5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-xl font-bold text-[#A47C57]">BitNest Analyse</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#grundlagen" class="nav-link pb-1">Grundlagen</a>
+                    <a href="#oekosystem" class="nav-link pb-1">Ökosystem</a>
+                    <a href="#provision" class="nav-link pb-1">Provision</a>
+                    <a href="#risiko" class="nav-link pb-1">Risiko & Chance</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="text-center py-20 md:py-32 bg-[#EFEBE5]">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 text-[#7A6250]">BitNest DAO Entschlüsselt</h1>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto text-[#3D352E]">Eine interaktive Aufschlüsselung der Technologie, des Modells und der potenziellen Risiken – einfach und verständlich erklärt.</p>
+            </div>
+        </section>
+
+        <section id="grundlagen" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">Die Grundlagen verstehen</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Bevor wir in BitNest eintauchen, ist es wichtig, die Kerntechnologien zu verstehen, auf denen es aufbaut. Diese Konzepte sind die Bausteine der dezentralen Finanzwelt.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card bg-white p-8 rounded-lg shadow-md border border-gray-200/50">
+                        <h3 class="text-2xl font-bold mb-4 text-[#A47C57]">Was sind Smart Contracts?</h3>
+                        <p>Stellen Sie sich einen digitalen Verkaufsautomaten vor. Smart Contracts sind selbstausführende Programme auf einer Blockchain, die automatisch vordefinierte Regeln umsetzen, wenn bestimmte Bedingungen erfüllt sind. Sie eliminieren den Bedarf an Vermittlern und machen Vereinbarungen transparent und unveränderlich.</p>
+                    </div>
+                    <div class="card bg-white p-8 rounded-lg shadow-md border border-gray-200/50">
+                        <h3 class="text-2xl font-bold mb-4 text-[#A47C57]">Was ist eine DAO?</h3>
+                        <p>Eine Dezentrale Autonome Organisation (DAO) ist wie ein Unternehmen, das ohne zentralen Chef funktioniert. Die Regeln sind in Smart Contracts festgeschrieben, und Entscheidungen werden von den Mitgliedern (oft Token-Inhabern) gemeinsam durch Abstimmungen getroffen. Dies fördert Transparenz und Gemeinschaftsbeteiligung.</p>
+                    </div>
+                    <div class="card bg-white p-8 rounded-lg shadow-md border border-gray-200/50">
+                        <h3 class="text-2xl font-bold mb-4 text-[#A47C57]">Was ist DeFi?</h3>
+                        <p>Dezentrale Finanzen (DeFi) ist ein Sammelbegriff für Finanzdienstleistungen, die auf öffentlichen Blockchains basieren. Es zielt darauf ab, traditionelle Finanzsysteme wie Banken durch ein offenes, erlaubnisfreies und transparentes Ökosystem zu ersetzen, das für jeden mit einer Internetverbindung zugänglich ist.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="oekosystem" class="py-16 md:py-24 bg-[#EFEBE5]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">Das BitNest-Ökosystem</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">BitNest besteht aus mehreren spezialisierten Smart Contracts, die zusammenarbeiten, um die Plattform zu betreiben. Klicken Sie auf die einzelnen Komponenten, um ihre Rolle zu verstehen.</p>
+                </div>
+                <div class="lg:flex lg:items-center lg:space-x-8">
+                    <div class="lg:w-2/3">
+                        <div class="relative p-8">
+                             <div class="grid grid-cols-2 gap-8 items-center justify-center">
+                                <div id="contract-bitnest" class="contract-box col-span-2 text-center p-6 bg-white rounded-lg shadow-lg font-bold text-lg border-2 border-[#A47C57]">BitNest.sol (Das Gehirn)</div>
+                                <div id="contract-token" class="contract-box text-center p-6 bg-white rounded-lg shadow">Token.sol</div>
+                                <div id="contract-manager" class="contract-box text-center p-6 bg-white rounded-lg shadow">IPositionManager.sol</div>
+                                <div id="contract-uniswap" class="contract-box col-span-2 text-center p-6 bg-white rounded-lg shadow">UniswapUtil.sol</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/3 mt-8 lg:mt-0">
+                        <div id="contract-info" class="bg-white p-6 rounded-lg shadow-lg h-64 flex flex-col justify-center">
+                            <h3 id="info-title" class="text-xl font-bold mb-2 text-[#A47C57]">Wählen Sie einen Vertrag</h3>
+                            <p id="info-text" class="text-gray-700">Klicken Sie auf eine Komponente links, um eine Beschreibung ihrer wahrscheinlichen Funktion im BitNest-System anzuzeigen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="provision" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">Das Provisionsmodell interaktiv</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Ein Kernmerkmal von BitNest ist sein mehrstufiges Provisionsmodell. Dieses Diagramm zeigt die prozentuale Beteiligung pro Ebene. Verwenden Sie den Schieberegler, um zu simulieren, wie sich eine Investition auf die potenziellen Einnahmen auswirkt.</p>
+                </div>
+                <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg border border-gray-200/50">
+                    <div class="chart-container">
+                        <canvas id="commissionChart"></canvas>
+                    </div>
+                    <div class="mt-8 pt-4 border-t">
+                        <label for="investmentSlider" class="block font-semibold text-center text-lg mb-2">Simulierte Investition: <span id="investmentValue" class="font-bold text-[#A47C57]">1000 USDT</span></label>
+                        <input id="investmentSlider" type="range" min="100" max="10000" value="1000" step="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" style="accent-color: #D4A276;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="risiko" class="py-16 md:py-24 bg-[#EFEBE5]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">Risiko vs. Chance</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Die Behauptung "Nullrisiko" ist in der komplexen DeFi-Welt optimistisch. Eine ausgewogene Betrachtung ist entscheidend. Hier sind die potenziellen Chancen und die inhärenten Risiken, die man kennen sollte.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200/50">
+                        <h3 class="text-2xl font-bold mb-4 text-green-600 flex items-center"><span class="text-3xl mr-3">✅</span> Chancen</h3>
+                        <ul class="space-y-3 text-gray-700">
+                            <li><strong>Dezentralisierung:</strong> Keine zentrale Kontrollinstanz, was Zensurresistenz fördert.</li>
+                            <li><strong>Automatisierung:</strong> Smart Contracts führen Prozesse zuverlässig und ohne menschliche Fehler aus.</li>
+                            <li><strong>Transparenz:</strong> Alle Transaktionen und Regeln sind öffentlich auf der Blockchain einsehbar.</li>
+                            <li><strong>Zugänglichkeit:</strong> Potenziell globale Reichweite für Finanzdienstleistungen.</li>
+                            <li><strong>Innovatives Ertragsmodell:</strong> Das Provisionssystem kann bei Netzwerkwachstum lukrativ sein.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200/50">
+                        <h3 class="text-2xl font-bold mb-4 text-red-600 flex items-center"><span class="text-3xl mr-3">⚠️</span> Risiken</h3>
+                        <ul class="space-y-3 text-gray-700">
+                            <li><strong>Smart-Contract-Fehler:</strong> Bugs im Code können ausgenutzt werden und zu Geldverlust führen.</li>
+                            <li><strong>Marktvolatilität:</strong> Der Wert von Krypto-Assets kann stark schwanken.</li>
+                            <li><strong>Wirtschaftsmodell:</strong> Modelle, die auf konstantem Wachstum basieren, können instabil werden.</li>
+                            <li><strong>Regulatorische Unsicherheit:</strong> Die rechtliche Lage für DeFi ist in vielen Ländern unklar.</li>
+                            <li><strong>Orakel-Abhängigkeit:</strong> Fehlerhafte externe Daten (z.B. Preise) können das System stören.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#3D352E] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>Diese interaktive Analyse dient ausschließlich zu Bildungszwecken und stellt keine Finanzberatung dar.</p>
+            <p class="text-sm mt-2 opacity-70">Erstellt basierend auf dem Analysebericht zu BitNest DAO.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const contractData = {
+                'contract-bitnest': {
+                    title: 'BitNest.sol (Das Gehirn)',
+                    text: 'Dies ist der zentrale Hauptvertrag. Er orchestriert die Interaktionen zwischen den Nutzern und den anderen Verträgen, verwaltet die Kernlogik für Ein- und Auszahlungen sowie das komplexe Provisionssystem.'
+                },
+                'contract-token': {
+                    title: 'Token.sol (Die Währung)',
+                    text: 'Dieser Vertrag definiert die digitale Währung (z.B. einen Stablecoin wie USDT oder einen eigenen Token), die auf der Plattform für alle Transaktionen, Belohnungen und Investitionen verwendet wird.'
+                },
+                'contract-manager': {
+                    title: 'IPositionManager.sol (Der Verwalter)',
+                    text: 'Verwaltet die spezifischen finanziellen "Positionen" der Nutzer, wie z.B. ihre Einlagen, Kredite oder Ersparnisse. Er stellt sicher, dass alle Investitionen korrekt nachverfolgt werden.'
+                },
+                'contract-uniswap': {
+                    title: 'UniswapUtil.sol (Die Brücke)',
+                    text: 'Enthält Hilfsfunktionen zur Interaktion mit externen dezentralen Börsen wie Uniswap. Dies wird für den Tausch von Token oder das Abrufen von Echtzeit-Preisdaten benötigt.'
+                }
+            };
+            
+            const contractBoxes = document.querySelectorAll('.contract-box');
+            const infoTitle = document.getElementById('info-title');
+            const infoText = document.getElementById('info-text');
+
+            contractBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    contractBoxes.forEach(b => b.classList.remove('active'));
+                    box.classList.add('active');
+                    const data = contractData[box.id];
+                    infoTitle.textContent = data.title;
+                    infoText.textContent = data.text;
+                });
+            });
+
+            const commissionLevels = Array.from({ length: 17 }, (_, i) => `Ebene ${i + 1}`);
+            const commissionPercentages = [20, 10, 5, 5, 5, 5, 5, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1];
+
+            const ctx = document.getElementById('commissionChart').getContext('2d');
+            const commissionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: commissionLevels,
+                    datasets: [{
+                        label: 'Provisionsrate (%)',
+                        data: commissionPercentages,
+                        backgroundColor: '#D4A276',
+                        borderColor: '#A47C57',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Provision in %'
+                            }
+                        },
+                        x: {
+                           ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = context.raw;
+                                    const investment = parseFloat(document.getElementById('investmentSlider').value);
+                                    const earnings = (investment * percentage / 100).toFixed(2);
+                                    return `Rate: ${percentage}% | Verdienst: ${earnings} USDT`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const slider = document.getElementById('investmentSlider');
+            const valueDisplay = document.getElementById('investmentValue');
+
+            slider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                valueDisplay.textContent = `${value.toLocaleString('de-DE')} USDT`;
+                commissionChart.update();
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
